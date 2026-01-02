@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: devops-app
-          image: devops-app:2.0
+          image: ghcr.io/<dagsat>/devops-app:latest
+
           ports:
             - containerPort: 3000
 
