@@ -1,12 +1,13 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: devops-app
 spec:
   replicas: 3
   selector:
     matchLabels:
       app: devops-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1      # maks 1 pod kan være nede samtidig
+      maxSurge: 1            # maks 1 pod ekstra kan lages under oppdatering
   template:
     metadata:
       labels:
@@ -14,34 +15,26 @@ spec:
     spec:
       containers:
         - name: devops-app
-          image: ghcr.io/<dagsat>/devops-app:latest
-
+          image: ghcr.io/dagsat/devops-app:latest
           ports:
             - containerPort: 3000
-
-          # 🔹 Environment variables fra ConfigMap og Secret
           envFrom:
             - configMapRef:
                 name: devops-app-config
             - secretRef:
                 name: devops-app-secret
-
-          # 🔹 Health checks
           livenessProbe:
             httpGet:
               path: /health
               port: 3000
             initialDelaySeconds: 10
             periodSeconds: 10
-
           readinessProbe:
             httpGet:
               path: /health
               port: 3000
             initialDelaySeconds: 5
             periodSeconds: 5
-
-          # 🔹 Ressursgrenser (anbefalt)
           resources:
             requests:
               cpu: "100m"
