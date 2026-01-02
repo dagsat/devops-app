@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: devops-app
+  template:
+    metadata:
+      labels:
+        app: devops-app
+    spec:
+      containers:
+        - name: devops-app
+          image: devops-app:2.0
+          ports:
+            - containerPort: 3000
+
+          # 🔹 Environment variables fra ConfigMap og Secret
+          envFrom:
+            - configMapRef:
+                name: devops-app-config
+            - secretRef:
+                name: devops-app-secret
+
+          # 🔹 Health checks
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          # 🔹 Ressursgrenser (anbefalt)
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: devops-app-config
+data:
+  APP_NAME: devops-app
+  APP_ENV: local
